@@ -3,18 +3,20 @@ get '/sessions/new' do
 end
 
 post '/sessions' do
-  @user = User.authenticate(params[:email], params[:password])
-  if @user
-    session[:user_id] = @user.id
-    redirect "/users/#{@user.id}"
+  user = User.find_by(email: params[:user][:email])
+  if user && user.authenticate(params[:user][:password])
+    session[:user_id] = user.id
+    redirect '/'
   else
     @error = "Invalid login, try again"
-    erb :'sessions/new'
+    erb :'/session/new'
   end
 end
 
 
 get '/sessions/logout' do
-  session.clear
+  session[:user_id] = nil
+#   Or ...
+#   session.clear
   redirect '/'
 end
